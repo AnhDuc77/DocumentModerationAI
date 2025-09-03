@@ -16,6 +16,19 @@ Pillow>=10.0.0
 # Specialized Models (High Accuracy)
 nudenet>=3.0.0  # High-accuracy NSFW detection
 
+# Educational Content Moderation Models
+# These will be downloaded automatically by transformers
+# cardiffnlp/twitter-roberta-base-offensive  # Offensive content detection
+# unitary/toxic-bert  # General toxicity detection
+
+# Document Processing Libraries
+PyPDF2>=3.0.0  # PDF text extraction
+python-docx>=0.8.11  # DOCX text extraction
+openpyxl>=3.1.0  # Excel file processing
+python-pptx>=0.6.21  # PowerPoint file processing
+# Note: python-magic removed due to Windows compatibility issues
+# Using built-in mimetypes and magic bytes detection instead
+
 # Text Processing & Hashing
 datasketch>=1.5.0
 simhash>=2.1.0
