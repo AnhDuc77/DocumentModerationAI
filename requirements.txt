@@ -1,0 +1,29 @@
+# Final AI Service Requirements - Production Ready
+
+# Core FastAPI
+fastapi>=0.104.0
+uvicorn[standard]>=0.24.0
+python-multipart>=0.0.6
+
+# AI/ML Core
+torch>=2.0.0
+transformers>=4.35.0
+datasets>=2.16.0
+
+# Image Processing
+Pillow>=10.0.0
+
+# Specialized Models (High Accuracy)
+nudenet>=3.0.0  # High-accuracy NSFW detection
+
+# Text Processing & Hashing
+datasketch>=1.5.0
+simhash>=2.1.0
+
+# Utilities
+numpy>=1.24.0
+requests>=2.31.0
+
+# Development & Testing
+pytest>=7.4.0
+pytest-asyncio>=0.21.0
