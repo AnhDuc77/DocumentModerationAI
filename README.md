@@ -17,13 +17,16 @@
 - **Violence Detection**: CLIP model (75-85% accuracy)
 - **Fallback Support**: NudeNet backup for enhanced reliability
 - **Multiple Formats**: PNG, JPEG, GIF support
+- **PDF Image Extraction**: PyMuPDF + pdf2image for embedded images
 
 ### Document Processing
 
 - **Chunk-based Processing**: Handles text and image chunks from Spring Boot
+- **Page Violation Tracking**: Reports which pages contain violations
 - **Duplicate Detection**: SHA256, SimHash, MinHash signatures
 - **Bulk Processing**: Multiple chunks in single request
 - **Metadata Support**: Preserves document context and structure
+- **Response Optimization**: Configurable detail levels for performance
 
 ## Installation
 
@@ -107,6 +110,36 @@ image_file: [binary image data]
 metadata: {"page": 1}
 ```
 
+### Extract PDF Images
+
+```bash
+POST /extract-pdf-images
+Content-Type: multipart/form-data
+
+file: [PDF file]
+```
+
+### Process File with Page Violation Tracking
+
+```bash
+POST /process-file
+Content-Type: multipart/form-data
+
+file: [file]
+include_full_text: false
+include_detailed_results: true
+```
+
+### Process File Summary (Optimized)
+
+```bash
+POST /process-file-summary
+Content-Type: multipart/form-data
+
+file: [file]
+thresholds: {"overall": 0.8}
+```
+
 ## Testing
 
 ### Run All Tests
@@ -161,6 +194,41 @@ public class DocumentModerationService {
   "processing_time": 2.34,
   "text_results": [...],
   "image_results": [...]
+}
+
+// File Processing Response with Page Violations
+{
+  "file_id": "doc_123",
+  "filename": "document.pdf",
+  "file_type": "pdf",
+  "processing_status": "completed",
+  "overall_moderation_score": 0.75,
+  "processing_time": 3.2,
+
+  // Page violation tracking
+  "total_pages": 10,
+  "violations_found": 2,
+  "violation_pages": [3, 7],
+  "violation_summary": [
+    {
+      "page_number": 3,
+      "violation_type": "text",
+      "severity": "HIGH",
+      "score": 0.85,
+      "details": "Text violation in chunk 3"
+    },
+    {
+      "page_number": 7,
+      "violation_type": "image",
+      "severity": "MEDIUM",
+      "score": 0.65,
+      "details": "Image violation in image 2"
+    }
+  ],
+
+  "overall_risk": "HIGH",
+  "text_length": 5000,
+  "image_count": 3
 }
 ```
 

@@ -33,12 +33,8 @@ class AIModelManager:
         self.nudenet_detector = None
         self.clip_model = None
         self.clip_processor = None
-        self.toxicity_pipeline = None
-        self.hate_speech_pipeline = None
         self.falconsai_nsfw_classifier = None
-        self.educational_offensive_classifier = None
-        self.educational_inappropriate_classifier = None
-        self.vietnamese_phobert_classifier = None
+        self.toxicity_pipeline = None  # For English text moderation
         
     def load_all_models(self):
         """Load all available AI models"""
@@ -53,11 +49,8 @@ class AIModelManager:
         # Load CLIP for general image classification
         self._load_clip()
         
-        # Load text moderation models
-        self._load_text_models()
-        
-        # Load educational content moderation models
-        self._load_educational_models()
+        # Load English text moderation model
+        self._load_english_toxicity_model()
         
         print("AI Service initialization completed")
     
@@ -97,56 +90,19 @@ class AIModelManager:
             self.clip_model = None
             self.clip_processor = None
     
-    def _load_text_models(self):
-        """Load text moderation models"""
+    def _load_english_toxicity_model(self):
+        """Load English toxicity model for text moderation"""
         try:
-            print("Loading text moderation models...")
-            
+            print("Loading English toxicity model...")
             self.toxicity_pipeline = pipeline(
                 "text-classification", 
                 model=MODEL_NAMES["toxicity"],
                 device=0 if torch.cuda.is_available() else -1
             )
-            
-            self.hate_speech_pipeline = pipeline(
-                "text-classification",
-                model=MODEL_NAMES["hate_speech"],
-                device=0 if torch.cuda.is_available() else -1
-            )
-            
-            print("Text moderation models loaded successfully")
-            
+            print("English toxicity model loaded successfully")
         except Exception as e:
-            print(f"Warning: Text models failed to load: {e}")
+            print(f"Warning: English toxicity model failed to load: {e}")
             self.toxicity_pipeline = None
-            self.hate_speech_pipeline = None
-    
-    def _load_educational_models(self):
-        """Load educational content moderation models"""
-        if EDUCATIONAL_MODELS_AVAILABLE:
-            try:
-                print("Loading educational content moderation models...")
-                
-                # Load offensive content classifier
-                self.educational_offensive_classifier = pipeline(
-                    "text-classification",
-                    model=MODEL_NAMES["educational_offensive"],
-                    device=0 if torch.cuda.is_available() else -1
-                )
-                
-                # Load inappropriate content classifier
-                self.educational_inappropriate_classifier = pipeline(
-                    "text-classification",
-                    model=MODEL_NAMES["hate_speech"],  # Reuse hate speech model
-                    device=0 if torch.cuda.is_available() else -1
-                )
-                
-                print("Educational content moderation models loaded successfully")
-                
-            except Exception as e:
-                print(f"Warning: Educational models failed to load: {e}")
-                self.educational_offensive_classifier = None
-                self.educational_inappropriate_classifier = None
     
     def get_models_status(self):
         """Get status of all loaded models"""
@@ -155,9 +111,7 @@ class AIModelManager:
             "nudenet_detector": self.nudenet_detector is not None,
             "clip_model": self.clip_model is not None,
             "toxicity_pipeline": self.toxicity_pipeline is not None,
-            "hate_speech_pipeline": self.hate_speech_pipeline is not None,
-            "educational_offensive_classifier": self.educational_offensive_classifier is not None,
-            "educational_inappropriate_classifier": self.educational_inappropriate_classifier is not None
+            "vietnamese_moderation": "keyword_based"  # Always available
         }
     
     def get_capabilities(self):
@@ -165,9 +119,8 @@ class AIModelManager:
         return {
             "nsfw_detection": "Falconsai" if self.falconsai_nsfw_classifier else ("NudeNet" if self.nudenet_detector else "Basic"),
             "violence_detection": "CLIP" if self.clip_model else "Basic",
-            "text_toxicity": "Advanced" if self.toxicity_pipeline else "Basic",
-            "text_hate_speech": "Advanced" if self.hate_speech_pipeline else "Basic",
-            "educational_content_moderation": "Advanced" if self.educational_offensive_classifier else "Keyword-based"
+            "text_moderation": "Hybrid (AI + Keywords)" if self.toxicity_pipeline else "Keywords Only",
+            "educational_content_moderation": "Hybrid (AI + Keywords)" if self.toxicity_pipeline else "Keywords Only"
         }
     
     def get_accuracy_estimates(self):
@@ -175,8 +128,8 @@ class AIModelManager:
         return {
             "nsfw_detection": "92-97%" if self.falconsai_nsfw_classifier else ("90-95%" if self.nudenet_detector else "60-70%"),
             "violence_detection": "75-85%" if self.clip_model else "50-60%",
-            "text_moderation": "85-90%" if self.toxicity_pipeline else "60-70%",
-            "educational_moderation": "90-95%" if self.educational_offensive_classifier else "85-90%"
+            "text_moderation": "85-90% (Hybrid)" if self.toxicity_pipeline else "70-80% (Keywords)",
+            "educational_moderation": "85-90% (Hybrid)" if self.toxicity_pipeline else "70-80% (Keywords)"
         }
 
 # Global model manager instance

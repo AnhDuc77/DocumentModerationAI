@@ -44,6 +44,13 @@ class FileProcessingRequest(BaseModel):
     thresholds: Dict[str, float] = {}
     processing_options: Dict[str, Any] = {}
 
+class ViolationInfo(BaseModel):
+    page_number: int
+    violation_type: str  # "text", "image", "both"
+    severity: str  # "HIGH", "MEDIUM", "LOW"
+    score: float
+    details: str = ""
+
 class FileProcessingResult(BaseModel):
     file_id: str
     filename: str
@@ -51,9 +58,21 @@ class FileProcessingResult(BaseModel):
     processing_status: str
     overall_moderation_score: float
     processing_time: float
+    
+    # Summary information
+    total_pages: int = 0
+    violations_found: int = 0
+    violation_pages: List[int] = []
+    violation_summary: List[ViolationInfo] = []
+    
+    # Detailed results (can be limited)
     text_content: str = ""
     text_moderation_result: Dict[str, Any] = {}
     image_count: int = 0
     image_moderation_results: List[Dict[str, Any]] = []
     thresholds_used: Dict[str, float] = {}
     details: Dict[str, Any] = {}
+    
+    # Response optimization flags
+    include_full_text: bool = False
+    include_detailed_results: bool = False

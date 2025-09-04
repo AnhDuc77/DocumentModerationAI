@@ -3,10 +3,10 @@ Configuration settings for AI Document Processing Service
 """
 
 # Model Configuration
-NSFW_THRESHOLD = 0.7
-VIOLENCE_THRESHOLD = 0.6
-TOXICITY_THRESHOLD = 0.7
-NUDENET_THRESHOLD = 0.6
+NSFW_THRESHOLD = 0.9
+VIOLENCE_THRESHOLD = 0.9
+TOXICITY_THRESHOLD = 0.9
+NUDENET_THRESHOLD = 0.9
 NUM_PERM = 128
 
 # Educational content moderation thresholds
